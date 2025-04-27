@@ -330,7 +330,7 @@ export default function HomeScreen() {
                     ]}
                   >
                     <Ionicons
-                      name="medical"
+                      name="heart"
                       size={24}
                       color={medication.color}
                     />
@@ -392,7 +392,7 @@ export default function HomeScreen() {
             {todaysMedications.map((medication) => (
               <View key={medication.id} style={styles.notificationItem}>
                 <View style={styles.notificationIcon}>
-                  <Ionicons name="medical" size={24} color={medication.color} />
+                  <Ionicons name="heart" size={24} color={medication.color} />
                 </View>
                 <View style={styles.notificationContent}>
                   <Text style={styles.notificationTitle}>

@@ -1,6 +1,6 @@
 import * as Notifications from "expo-notifications";
-import * as Speech from "expo-speech"; // <--- (Added for voice reminder)
-import Constants from "expo-constants"; // <--- (For projectId)
+import * as Speech from "expo-speech"; 
+import Constants from "expo-constants"; 
 import { Platform } from "react-native";
 import { Medication } from "./storage";
 
@@ -12,6 +12,48 @@ Notifications.setNotificationHandler({
   }),
 });
 
+
+class ReminderManager {
+  private timers: Map<string, NodeJS.Timeout> = new Map();
+  
+  private readonly reminderMessages = [
+    (name: string, dosage: string) => `It's time to take your medicine: ${name}, ${dosage}`,
+    (name: string) => `Gentle reminder - please take your ${name}`,
+    () => "Your medication is still pending",
+    () => "Please don't forget your medicine",
+    () => "Final reminder for your medication"
+  ];
+
+  scheduleEscalatingReminders(medicationId: string, medicineName: string, dosage: string) {
+    let reminderCount = 0;
+    
+    const scheduleNextReminder = () => {
+      if (reminderCount < this.reminderMessages.length) {
+        const message = this.reminderMessages[reminderCount](medicineName, dosage);
+        Speech.speak(message);
+        reminderCount++;
+        
+        const nextTimer = setTimeout(() => {
+          scheduleNextReminder();
+        }, (reminderCount * 5) * 60 * 1000);
+        
+        this.timers.set(medicationId, nextTimer);
+      }
+    };
+
+    scheduleNextReminder();
+  }
+
+  cancelReminder(medicationId: string) {
+    const timer = this.timers.get(medicationId);
+    if (timer) {
+      clearTimeout(timer);
+      this.timers.delete(medicationId);
+    }
+  }
+}
+
+const reminderManager = new ReminderManager();
 
 export async function registerForPushNotificationsAsync(): Promise<string | null> {
   let token: string | null = null;
@@ -56,13 +98,6 @@ export async function registerForPushNotificationsAsync(): Promise<string | null
   }
 }
 
-// Speak reminder
-function speakReminder(medicineName: string, dosage: string) {
-  const message = `It's time to take your medicine: ${medicineName}, ${dosage}`;
-  Speech.speak(message);
-}
-
-
 export async function scheduleMedicationReminder(medication: Medication): Promise<void> {
   if (!medication.reminderEnabled) return;
 
@@ -92,16 +127,18 @@ export async function scheduleMedicationReminder(medication: Medication): Promis
         },        
       });
 
-      // 📣 Speak the reminder when notification triggers
       setTimeout(() => {
-        speakReminder(medication.name, medication.dosage);
+        reminderManager.scheduleEscalatingReminders(
+          medication.id,
+          medication.name,
+          medication.dosage
+        );
       }, triggerTime.getTime() - now.getTime());
     }
   } catch (error) {
     console.error("Error scheduling medication reminder:", error);
   }
 }
-
 
 export async function scheduleRefillReminder(medication: Medication): Promise<void> {
   if (!medication.refillReminder) return;
@@ -129,6 +166,7 @@ export async function cancelMedicationReminders(medicationId: string): Promise<v
       const data = notification.content.data as { medicationId?: string } | null;
       if (data?.medicationId === medicationId) {
         await Notifications.cancelScheduledNotificationAsync(notification.identifier);
+        reminderManager.cancelReminder(medicationId);
       }
     }
   } catch (error) {

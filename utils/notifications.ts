@@ -4,7 +4,6 @@ import Constants from "expo-constants"; // <--- (For projectId)
 import { Platform } from "react-native";
 import { Medication } from "./storage";
 
-// Notification behavior
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -13,7 +12,7 @@ Notifications.setNotificationHandler({
   }),
 });
 
-// Register for push notifications
+
 export async function registerForPushNotificationsAsync(): Promise<string | null> {
   let token: string | null = null;
 
@@ -63,7 +62,7 @@ function speakReminder(medicineName: string, dosage: string) {
   Speech.speak(message);
 }
 
-// Schedule medication reminders
+
 export async function scheduleMedicationReminder(medication: Medication): Promise<void> {
   if (!medication.reminderEnabled) return;
 
@@ -76,7 +75,7 @@ export async function scheduleMedicationReminder(medication: Medication): Promis
       triggerTime.setHours(hours, minutes, 0, 0);
 
       if (triggerTime <= now) {
-        triggerTime.setDate(triggerTime.getDate() + 1); // Schedule for tomorrow
+        triggerTime.setDate(triggerTime.getDate() + 1); 
       }
 
       await Notifications.scheduleNotificationAsync({
@@ -89,7 +88,7 @@ export async function scheduleMedicationReminder(medication: Medication): Promis
           hour: hours,
           minute: minutes,
           repeats: true,
-          channelId: "default", // Important for Android 13+ for scheduled notifications
+          channelId: "default", 
         },        
       });
 
@@ -103,7 +102,7 @@ export async function scheduleMedicationReminder(medication: Medication): Promis
   }
 }
 
-// Schedule refill reminder
+
 export async function scheduleRefillReminder(medication: Medication): Promise<void> {
   if (!medication.refillReminder) return;
 
@@ -115,7 +114,7 @@ export async function scheduleRefillReminder(medication: Medication): Promise<vo
           body: `Your ${medication.name} supply is running low. Current supply: ${medication.currentSupply}`,
           data: { medicationId: medication.id, type: "refill" },
         },
-        trigger: null, // Show immediately
+        trigger: null, 
       });
     }
   } catch (error) {
@@ -123,7 +122,6 @@ export async function scheduleRefillReminder(medication: Medication): Promise<vo
   }
 }
 
-// Cancel all reminders for a medication
 export async function cancelMedicationReminders(medicationId: string): Promise<void> {
   try {
     const scheduledNotifications = await Notifications.getAllScheduledNotificationsAsync();
@@ -138,7 +136,6 @@ export async function cancelMedicationReminders(medicationId: string): Promise<v
   }
 }
 
-// Update reminders when medication changes
 export async function updateMedicationReminders(medication: Medication): Promise<void> {
   try {
     await cancelMedicationReminders(medication.id);

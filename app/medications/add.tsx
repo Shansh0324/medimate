@@ -130,7 +130,6 @@ export default function AddMedicationScreen() {
       if (isSubmitting) return;
       setIsSubmitting(true);
 
-      // Generate a random color
       const colors = ["#4CAF50", "#2196F3", "#FF9800", "#E91E63", "#9C27B0"];
       const randomColor = colors[Math.floor(Math.random() * colors.length)];
 
@@ -146,7 +145,6 @@ export default function AddMedicationScreen() {
 
       await addMedication(medicationData);
 
-      // Schedule reminders if enabled
       if (medicationData.reminderEnabled) {
         await scheduleMedicationReminder(medicationData);
       }
@@ -280,7 +278,6 @@ export default function AddMedicationScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        // colors={["#1a8e2d", "#146922"]}
         colors={["#6EC1E4", "#6EC1E4"]}
         style={styles.headerGradient}
         start={{ x: 0, y: 0 }}
@@ -303,7 +300,7 @@ export default function AddMedicationScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.formContentContainer}
         >
-          {/* Basic Information */}
+
           <View style={styles.section}>
             <View style={styles.inputContainer}>
               <TextInput
@@ -340,8 +337,8 @@ export default function AddMedicationScreen() {
               )}
             </View>
           </View>
-
-          {/* Schedule */}
+  
+            {/* Frequency and Duration */}  
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>How often?</Text>
             {errors.frequency && (
@@ -427,7 +424,7 @@ export default function AddMedicationScreen() {
             )}
           </View>
 
-          {/* Reminders */}
+
           <View style={styles.section}>
             <View style={styles.card}>
               <View style={styles.switchRow}>
@@ -454,7 +451,6 @@ export default function AddMedicationScreen() {
             </View>
           </View>
 
-          {/* Refill Tracking */}
           <View style={styles.section}>
             <View style={styles.card}>
               <View style={styles.switchRow}>
@@ -538,7 +534,6 @@ export default function AddMedicationScreen() {
             </View>
           </View>
 
-          {/* Notes */}
           <View style={styles.section}>
             <View style={styles.textAreaContainer}>
               <TextInput

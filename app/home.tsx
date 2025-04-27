@@ -30,7 +30,6 @@ import {
 
 const { width } = Dimensions.get("window");
 
-// Create animated circle component
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 const QUICK_ACTIONS = [
@@ -39,7 +38,6 @@ const QUICK_ACTIONS = [
     label: "Add\nMedication",
     route: "/medications/add" as const,
     color: "#2E7D32",
-    // gradient: ["#4CAF50", "#2E7D32"] as [string, string],
     gradient: ["#6EC1E4", "#6EC1E4"] as [string, string],
   },
   {
@@ -149,13 +147,11 @@ export default function HomeScreen() {
       setDoseHistory(todaysDoses);
       setMedications(allMedications);
 
-      // Filter medications for today
       const today = new Date();
       const todayMeds = allMedications.filter((med) => {
         const startDate = new Date(med.startDate);
         const durationDays = parseInt(med.duration.split(" ")[0]);
 
-        // For ongoing medications or if within duration
         if (
           durationDays === -1 ||
           (today >= startDate &&
@@ -171,7 +167,6 @@ export default function HomeScreen() {
 
       setTodaysMedications(todayMeds);
 
-      // Calculate completed doses
       const completed = todaysDoses.filter((dose) => dose.taken).length;
       setCompletedDoses(completed);
     } catch (error) {
@@ -187,7 +182,6 @@ export default function HomeScreen() {
         return;
       }
 
-      // Schedule reminders for all medications
       const medications = await getMedications();
       for (const medication of medications) {
         if (medication.reminderEnabled) {
@@ -199,12 +193,11 @@ export default function HomeScreen() {
     }
   };
 
-  // Use useEffect for initial load
+
   useEffect(() => {
     loadMedications();
     setupNotifications();
 
-    // Handle app state changes for notifications
     const subscription = AppState.addEventListener("change", (nextAppState) => {
       if (nextAppState === "active") {
         loadMedications();
@@ -216,11 +209,10 @@ export default function HomeScreen() {
     };
   }, []);
 
-  // Use useFocusEffect for subsequent updates
+
   useFocusEffect(
     useCallback(() => {
       const unsubscribe = () => {
-        // Cleanup if needed
       };
 
       loadMedications();
@@ -231,7 +223,7 @@ export default function HomeScreen() {
   const handleTakeDose = async (medication: Medication) => {
     try {
       await recordDose(medication.id, true, new Date().toISOString());
-      await loadMedications(); // Reload data after recording dose
+      await loadMedications(); 
     } catch (error) {
       console.error("Error recording dose:", error);
       Alert.alert("Error", "Failed to record dose. Please try again.");
@@ -251,7 +243,6 @@ export default function HomeScreen() {
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* <LinearGradient colors={["#1a8e2d", "#146922"]} style={styles.header}>  */}
       <LinearGradient colors={["#6EC1E4","#6EC1E4",]} style={styles.header}> 
         <View style={styles.headerContent}>
           <View style={styles.headerTop}>

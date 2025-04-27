@@ -36,7 +36,6 @@ export default function HistoryScreen() {
         getMedications(),
       ]);
 
-      // Combine history with medication details
       const enrichedHistory = doseHistory.map((dose) => ({
         ...dose,
         medication: medications.find((med) => med.id === dose.medicationId),

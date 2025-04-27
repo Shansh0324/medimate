@@ -35,7 +35,6 @@ export default function AuthScreen() {
       setIsAuthenticating(true);
       setError(null);
 
-      // Check if device has biometric hardware
       const hasHardware = await LocalAuthentication.hasHardwareAsync();
       const supportedTypes =
         await LocalAuthentication.supportedAuthenticationTypesAsync();

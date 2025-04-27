@@ -60,12 +60,10 @@ export default function CalendarScreen() {
     const calendar: JSX.Element[] = [];
     let week: JSX.Element[] = [];
 
-    // Add empty cells for days before the first day of the month
     for (let i = 0; i < firstDay; i++) {
       week.push(<View key={`empty-${i}`} style={styles.calendarDay} />);
     }
 
-    // Add days of the month
     for (let day = 1; day <= days; day++) {
       const date = new Date(
         selectedDate.getFullYear(),
